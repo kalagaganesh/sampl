@@ -6,12 +6,12 @@ import Cookies from 'js-cookie'
 
 import {Link, Redirect} from 'react-router-dom'
 
-import {formatDistanceToNow} from 'date-fns'
-
 import {IoMdHome} from 'react-icons/io'
 import {HiFire} from 'react-icons/hi'
 import {SiYoutubegaming} from 'react-icons/si'
 import {BiListPlus, BiLike, BiDislike} from 'react-icons/bi'
+
+import VideoContext from '../../context/VideosContext'
 
 import Header from '../Header'
 
@@ -32,12 +32,16 @@ import {
   ViewCount,
   LikeDislikeContainer,
   EachLikeDislikeContainer,
-  EachText,
   ViewLikeContainer,
+  SpanEle,
+  ProfileImage,
+  DescriptionContainer,
+  NameEle,
+  Subscribers,
 } from './styledComponents'
 
 class VideoItemDetails extends Component {
-  state = {videoDetails: {}}
+  state = {videoDetails: {}, liked: false, disliked: false}
 
   componentDidMount() {
     this.getVideoDetails()
@@ -58,10 +62,9 @@ class VideoItemDetails extends Component {
     const response = await fetch(url, options)
     const data = await response.json()
     const formattedData = {
-      channel: {
-        name: data.video_details.channel.name,
-        profileImageUrl: data.video_details.channel.profile_image_url,
-      },
+      name: data.video_details.channel.name,
+      profileImageUrl: data.video_details.channel.profile_image_url,
+      subscriberCount: data.video_details.channel.subscriber_count,
       id: data.video_details.id,
       description: data.video_details.description,
       publishedAt: data.video_details.published_at,
@@ -73,98 +76,190 @@ class VideoItemDetails extends Component {
     this.setState({videoDetails: formattedData})
   }
 
+  onClickLikeBtn = () => {
+    this.setState(prevState => ({
+      liked: !prevState.liked,
+      disliked: false,
+    }))
+  }
+
+  onClickDislikeBtn = () => {
+    this.setState(prevState => ({
+      liked: false,
+      disliked: !prevState.disliked,
+    }))
+  }
+
   render() {
-    const {videoDetails} = this.state
-    const {videoUrl, channel, title, viewCount} = videoDetails
-    const {name, profileImageUrl} = channel
+    const {videoDetails, liked, disliked} = this.state
+    const {
+      videoUrl,
+      title,
+      viewCount,
+      publishedAt,
+      profileImageUrl,
+      name,
+      subscriberCount,
+      description,
+    } = videoDetails
 
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
       return <Redirect to="/login" />
     }
+    const likeClassName = liked ? '#00306e' : '#383838'
+    const disLikeClassName = disliked ? '#00306e' : '#383838'
     return (
-      <>
-        <Header />
-        <HomeMainContainer>
-          <SelectContainer>
-            <SelectOneItemContainer>
-              <Link to="/" style={{textDecoration: 'none'}}>
-                <EachSelectContainer>
-                  <IoMdHome />
-                  <DisplayText>Home</DisplayText>
-                </EachSelectContainer>
-              </Link>
-              <Link to="/trending" style={{textDecoration: 'none'}}>
-                <EachSelectContainer>
-                  <HiFire />
-                  <DisplayText>Trending</DisplayText>
-                </EachSelectContainer>
-              </Link>
-              <Link to="/gaming" style={{textDecoration: 'none'}}>
-                <EachSelectContainer>
-                  <SiYoutubegaming />
-                  <DisplayText>Gaming</DisplayText>
-                </EachSelectContainer>
-              </Link>
-              <Link to="/saved-videos" style={{textDecoration: 'none'}}>
-                <EachSelectContainer>
-                  <BiListPlus />
-                  <DisplayText>Saved Videos</DisplayText>
-                </EachSelectContainer>
-              </Link>
-            </SelectOneItemContainer>
-            <ContactContainer>
-              <ContactText>CONTACT US</ContactText>
-              <LogoContainer>
-                <Logo
-                  src="https://assets.ccbp.in/frontend/react-js/nxt-watch-facebook-logo-img.png"
-                  alt="facebook logo"
-                />
-                <Logo
-                  src="https://assets.ccbp.in/frontend/react-js/nxt-watch-twitter-logo-img.png"
-                  alt="twitter logo"
-                />
-                <Logo
-                  src="https://assets.ccbp.in/frontend/react-js/nxt-watch-linked-in-logo-img.png"
-                  alt="linked in logo"
-                />
-              </LogoContainer>
-              <ContactText>
-                Enjoy! Now to see your channels and recommendations!
-              </ContactText>
-            </ContactContainer>
-          </SelectContainer>
-          <HomeVideosMainContainer>
-            <VideoContainer>
-              <ReactPlayer width="100%" height="100%" url={videoUrl} controls />
-            </VideoContainer>
-            <Title>{title}</Title>
-            <ViewLikeContainer>
-              <ViewCountContainer>
-                <ViewCount>{viewCount} views .</ViewCount>
-              </ViewCountContainer>
-              <LikeDislikeContainer>
-                <EachLikeDislikeContainer>
-                  <BiLike />
-                  <EachText>Like</EachText>
-                </EachLikeDislikeContainer>
-                <EachLikeDislikeContainer>
-                  <BiDislike />
-                  <EachText>DisLike</EachText>
-                </EachLikeDislikeContainer>
-                <EachLikeDislikeContainer>
-                  <BiListPlus />
-                  <EachText>Save</EachText>
-                </EachLikeDislikeContainer>
-              </LikeDislikeContainer>
-            </ViewLikeContainer>
-            <hr />
-            <div>
-              <img src={profileImageUrl} />
-            </div>
-          </HomeVideosMainContainer>
-        </HomeMainContainer>
-      </>
+      <VideoContext.Consumer>
+        {value => {
+          const {savedVideosList, updateVideoList, isDarkTheme} = value
+          const onClickSaveVideo = () => {
+            updateVideoList(videoDetails)
+          }
+          const videoAlreadySaved = savedVideosList.findIndex(
+            eachItem => eachItem.id === videoDetails.id,
+          )
+          let isSaved
+          if (videoAlreadySaved === -1) {
+            isSaved = false
+          } else {
+            isSaved = true
+          }
+          const colorClassName = isSaved ? '#00306e' : '#383838'
+          const changeBgColor = isDarkTheme ? ' #0f0f0f' : '#f9f9f9'
+          const navigationBgColor = isDarkTheme ? '#424242' : ''
+          const navigationTextColor = isDarkTheme ? '#ffffff' : '#424242'
+
+          return (
+            <>
+              <Header />
+              <HomeMainContainer>
+                <SelectContainer bgColor={navigationBgColor}>
+                  <SelectOneItemContainer>
+                    <Link to="/" style={{textDecoration: 'none'}}>
+                      <EachSelectContainer>
+                        <IoMdHome />
+                        <DisplayText color={navigationTextColor}>
+                          Home
+                        </DisplayText>
+                      </EachSelectContainer>
+                    </Link>
+                    <Link to="/trending" style={{textDecoration: 'none'}}>
+                      <EachSelectContainer>
+                        <HiFire />
+                        <DisplayText color={navigationTextColor}>
+                          Trending
+                        </DisplayText>
+                      </EachSelectContainer>
+                    </Link>
+                    <Link to="/gaming" style={{textDecoration: 'none'}}>
+                      <EachSelectContainer>
+                        <SiYoutubegaming />
+                        <DisplayText color={navigationTextColor}>
+                          Gaming
+                        </DisplayText>
+                      </EachSelectContainer>
+                    </Link>
+                    <Link to="/saved-videos" style={{textDecoration: 'none'}}>
+                      <EachSelectContainer>
+                        <BiListPlus />
+                        <DisplayText color={navigationTextColor}>
+                          Saved Videos
+                        </DisplayText>
+                      </EachSelectContainer>
+                    </Link>
+                  </SelectOneItemContainer>
+                  <ContactContainer>
+                    <ContactText color={navigationTextColor}>
+                      CONTACT US
+                    </ContactText>
+                    <LogoContainer>
+                      <Logo
+                        src="https://assets.ccbp.in/frontend/react-js/nxt-watch-facebook-logo-img.png"
+                        alt="facebook logo"
+                      />
+                      <Logo
+                        src="https://assets.ccbp.in/frontend/react-js/nxt-watch-twitter-logo-img.png"
+                        alt="twitter logo"
+                      />
+                      <Logo
+                        src="https://assets.ccbp.in/frontend/react-js/nxt-watch-linked-in-logo-img.png"
+                        alt="linked in logo"
+                      />
+                    </LogoContainer>
+                    <ContactText color={navigationTextColor}>
+                      Enjoy! Now to see your channels and recommendations!
+                    </ContactText>
+                  </ContactContainer>
+                </SelectContainer>
+                <HomeVideosMainContainer
+                  bgColor={changeBgColor}
+                  data-testid="videoItemDetails"
+                >
+                  <VideoContainer data-testid="videoItemDetails">
+                    <ReactPlayer
+                      width="100%"
+                      height="100%"
+                      url={videoUrl}
+                      controls
+                    />
+                  </VideoContainer>
+                  <Title color={navigationTextColor}>{title}</Title>
+                  <ViewLikeContainer>
+                    <ViewCountContainer>
+                      <ViewCount color={navigationTextColor}>
+                        {viewCount} views <SpanEle>{publishedAt}</SpanEle>
+                      </ViewCount>
+                    </ViewCountContainer>
+                    <LikeDislikeContainer>
+                      <EachLikeDislikeContainer
+                        color={likeClassName}
+                        onClick={this.onClickLikeBtn}
+                      >
+                        <BiLike /> Like
+                      </EachLikeDislikeContainer>
+                      <EachLikeDislikeContainer
+                        color={disLikeClassName}
+                        onClick={this.onClickDislikeBtn}
+                      >
+                        <BiDislike /> DisLike
+                      </EachLikeDislikeContainer>
+                      {isSaved ? (
+                        <EachLikeDislikeContainer
+                          onClick={onClickSaveVideo}
+                          color={colorClassName}
+                        >
+                          <BiListPlus /> Saved
+                        </EachLikeDislikeContainer>
+                      ) : (
+                        <EachLikeDislikeContainer
+                          onClick={onClickSaveVideo}
+                          color={colorClassName}
+                        >
+                          <BiListPlus /> Save
+                        </EachLikeDislikeContainer>
+                      )}
+                    </LikeDislikeContainer>
+                  </ViewLikeContainer>
+                  <hr />
+                  <DescriptionContainer>
+                    <ProfileImage alt="profile" src={profileImageUrl} />
+                    <div>
+                      <NameEle color={navigationTextColor}>{name}</NameEle>
+                      <Subscribers color={navigationTextColor}>
+                        {subscriberCount} subscribers
+                      </Subscribers>
+                      <NameEle color={navigationTextColor}>
+                        {description}
+                      </NameEle>
+                    </div>
+                  </DescriptionContainer>
+                </HomeVideosMainContainer>
+              </HomeMainContainer>
+            </>
+          )
+        }}
+      </VideoContext.Consumer>
     )
   }
 }

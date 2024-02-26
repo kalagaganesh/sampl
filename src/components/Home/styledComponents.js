@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const EachSelectContainer = styled.div`
+export const EachSelectContainer = styled.button`
   background: transparent;
   border-style: none;
   display: flex;
@@ -15,18 +15,18 @@ export const DisplayText = styled.p`
   margin-left: 20px;
   margin-top: 2px;
   font-family: 'Roboto';
+  color: ${props => props.color};
 `
 export const SelectOneItemContainer = styled.ul`
   margin-left: -30px;
 `
 export const SelectContainer = styled.div`
   width: 250px;
-  height: 700px;
-  margin-left: px;
+  margin-left: 0px;
   padding-top: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  background-color: ${props => props.bgColor};
 `
 export const LogoContainer = styled.div`
   display: flex;
@@ -37,12 +37,14 @@ export const Logo = styled.img`
 `
 export const ContactContainer = styled.div`
   margin-left: 20px;
+  margin-top: 300px;
 `
 export const ContactText = styled.p`
   font-size: 16px;
   font-weight: bold;
   color: #1e293b;
   font-family: 'Roboto';
+  color: ${props => props.color};
 `
 export const HomeMainContainer = styled.div`
   display: flex;
@@ -94,6 +96,7 @@ export const CLoseButton = styled.button`
 export const HomeVideosContainer = styled.div`
   width: 100%;
 `
+
 export const SearchInput = styled.input`
   width: 280px;
   height: 25px;
@@ -119,7 +122,9 @@ export const HomeVideosMainContainer = styled.div`
   background-color: #f9f9f9;
   height: 100%;
   padding: 20px;
+  background-color: ${props => props.bgColor};
 `
+
 export const ThumbnailImage = styled.img`
   width: 250px;
 `
@@ -133,7 +138,7 @@ export const AboutProfileContainer = styled.div`
   margin-top: 10px;
 `
 export const Title = styled.p`
-  color: #1e293b;
+  color: ${props => props.color};
   font-family: 'Roboto';
   font-size: 13px;
   margin-top: 0px;
@@ -153,16 +158,61 @@ export const Name = styled.p`
   font-size: 15px;
 `
 export const ViewCountContainer = styled.div`
-  display: flex;
-  margin-top: -25px;
+  margin-top: 0px;
   font-family: 'Roboto';
   color: #475569;
   font-size: 15px;
 `
 export const ViewCount = styled.p`
   margin-right: 10px;
+  display: flex;
 `
 export const UnorderedListContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
+`
+export const SpanEle = styled.span`
+  margin-left: 5px;
+  display: list-item;
+`
+
+export const FailureImage = styled.img`
+  width: 400px;
+`
+export const FailureContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+`
+export const FailureHeading = styled.h1`
+  color: #1e293b;
+  font-family: 'Roboto';
+  font-size: 30px;
+`
+
+export const FailurePara = styled.p`
+  color: #606060;
+  font-family: 'Roboto';
+  font-size: 18px;
+`
+
+export const FailureBtn = styled.button`
+  color: #ffffff;
+  font-family: 'Roboto';
+  font-size: 15px;
+  background-color: #4f46e5;
+  border-style: none;
+  font-weight: 500;
+  width: 100px;
+  height: 35px;
+  border-radius: 3px;
+  cursor: pointer;
+`
+export const LoaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 `

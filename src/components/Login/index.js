@@ -2,6 +2,8 @@ import {Component} from 'react'
 
 import Cookies from 'js-cookie'
 
+import {Redirect} from 'react-router-dom'
+
 import {
   LoginBgContainer,
   FormMainContainer,
@@ -78,12 +80,16 @@ class Login extends Component {
       showPassword,
     } = this.state
     const passwordType = showPassword ? 'text' : 'password'
+    const jwtToken = Cookies.get('jwt_token')
+    if (jwtToken !== undefined) {
+      return <Redirect to="/" />
+    }
     return (
       <LoginBgContainer>
         <FormMainContainer onSubmit={this.onSubmitForm}>
           <WatchLogoImage
             src="https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-light-theme-img.png"
-            alt="watch-logo"
+            alt="website logo"
           />
           <UsernameContainer>
             <LabelEle htmlFor="username">USERNAME</LabelEle>

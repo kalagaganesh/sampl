@@ -9,9 +9,9 @@ import {HiFire} from 'react-icons/hi'
 import {SiYoutubegaming} from 'react-icons/si'
 import {BiListPlus} from 'react-icons/bi'
 
-import VideosContext from '../../context/VideosContext'
-
 import Header from '../Header'
+
+import VideosContext from '../../context/VideosContext'
 
 import {
   EachSelectContainer,
@@ -24,24 +24,12 @@ import {
   ContactText,
   HomeMainContainer,
   TrendingMainContainer,
-  GamingHeader,
-  GamingLogo,
-  GamingText,
-  TrendingVideoContainer,
-  EachTrendingVideoContainer,
-  TrendingDetailsContainer,
-  TrendingName,
-  TrendingTitle,
-  TrendingCountContainer,
-  TrendingSpanEle,
-  TrendingThumbnailImage,
-  NoVideosContainer,
-  NoSavedVideosImage,
-  NoSavedVideosHeading,
-  NoSavedVideosPara,
+  NotFoundHeading,
+  NotFoundPara,
+  NotFoundImage,
 } from './styledComponents'
 
-class SavedVideos extends Component {
+class NotFound extends Component {
   render() {
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
@@ -50,7 +38,7 @@ class SavedVideos extends Component {
     return (
       <VideosContext.Consumer>
         {value => {
-          const {activeTabId, savedVideosList, changeTabId, isDarkTheme} = value
+          const {activeTabId, changeTabId, isDarkTheme} = value
           const onChangeHomeTabId = () => {
             changeTabId('Home')
           }
@@ -63,12 +51,15 @@ class SavedVideos extends Component {
           const onChangeSavedVideosTabId = () => {
             changeTabId('SavedVideos')
           }
-          const iconBgColor = activeTabId === 'SavedVideos' ? '#ff0b37' : ''
+
+          const iconBgColor = activeTabId === 'Trending' ? '#ff0b37' : ''
           const navigationBgColor = isDarkTheme ? '#424242' : ''
           const navigationTextColor = isDarkTheme ? '#ffffff' : '#424242'
-          const changeHeading = isDarkTheme ? '#ffffff' : '#1e293b'
-          const changeBgColor = isDarkTheme ? '#0f0f0f' : '#f9f9f9'
-          const changeHeaderColor = isDarkTheme ? '#181818' : '#e2e8f0'
+          const changeNotFoundImage = isDarkTheme
+            ? 'https://assets.ccbp.in/frontend/react-js/nxt-watch-not-found-dark-theme-img.png'
+            : 'https://assets.ccbp.in/frontend/react-js/nxt-watch-not-found-light-theme-img.png'
+          const changeNotFoundHeading = isDarkTheme ? '#ffffff' : '#1e293b'
+          const changeBgColor = isDarkTheme ? '#0f0f0f' : '#ffffff'
 
           return (
             <>
@@ -86,7 +77,7 @@ class SavedVideos extends Component {
                     </Link>
                     <Link to="/trending" style={{textDecoration: 'none'}}>
                       <EachSelectContainer onClick={onChangeTrendingTabId}>
-                        <HiFire />
+                        <HiFire color={iconBgColor} />
                         <DisplayText color={navigationTextColor}>
                           Trending
                         </DisplayText>
@@ -102,7 +93,7 @@ class SavedVideos extends Component {
                     </Link>
                     <Link to="/saved-videos" style={{textDecoration: 'none'}}>
                       <EachSelectContainer onClick={onChangeSavedVideosTabId}>
-                        <BiListPlus color={iconBgColor} />
+                        <BiListPlus />
                         <DisplayText color={navigationTextColor}>
                           Saved Videos
                         </DisplayText>
@@ -132,67 +123,15 @@ class SavedVideos extends Component {
                     </ContactText>
                   </ContactContainer>
                 </SelectContainer>
-                {savedVideosList.length === 0 ? (
-                  <NoVideosContainer
-                    bgColor={changeBgColor}
-                    data-testid="savedVideos"
-                  >
-                    <NoSavedVideosImage
-                      src="https://assets.ccbp.in/frontend/react-js/nxt-watch-no-saved-videos-img.png"
-                      alt="no saved videos"
-                    />
-                    <NoSavedVideosHeading color={changeHeading}>
-                      No Saved Videos found
-                    </NoSavedVideosHeading>
-                    <NoSavedVideosPara>
-                      You can save your videos while watching them
-                    </NoSavedVideosPara>
-                  </NoVideosContainer>
-                ) : (
-                  <TrendingMainContainer data-testid="savedVideos">
-                    <GamingHeader bgColor={changeHeaderColor}>
-                      <GamingLogo>
-                        <HiFire />
-                      </GamingLogo>
-                      <GamingText color={navigationTextColor}>
-                        Saved Videos
-                      </GamingText>
-                    </GamingHeader>
-                    <TrendingVideoContainer
-                      bgColor={changeBgColor}
-                      data-testid="savedVideos"
-                    >
-                      {savedVideosList.map(eachItem => (
-                        <Link
-                          style={{textDecoration: 'none'}}
-                          to={`/videos/${eachItem.id}`}
-                          key={eachItem.id}
-                        >
-                          <EachTrendingVideoContainer key={eachItem.id}>
-                            <TrendingThumbnailImage
-                              alt="trending"
-                              src={eachItem.thumbnailUrl}
-                            />
-                            <TrendingDetailsContainer>
-                              <TrendingTitle color={changeHeading}>
-                                {eachItem.title}
-                              </TrendingTitle>
-                              <TrendingName color={changeHeading}>
-                                {eachItem.name}
-                              </TrendingName>
-                              <TrendingCountContainer color={changeHeading}>
-                                {eachItem.viewCount} views{' '}
-                                <TrendingSpanEle>
-                                  {eachItem.publishedAt}
-                                </TrendingSpanEle>
-                              </TrendingCountContainer>
-                            </TrendingDetailsContainer>
-                          </EachTrendingVideoContainer>
-                        </Link>
-                      ))}
-                    </TrendingVideoContainer>
-                  </TrendingMainContainer>
-                )}
+                <TrendingMainContainer bgColor={changeBgColor}>
+                  <NotFoundImage alt="not found" src={changeNotFoundImage} />
+                  <NotFoundHeading color={changeNotFoundHeading}>
+                    Page Not Found
+                  </NotFoundHeading>
+                  <NotFoundPara>
+                    we are sorry, the page you requested could not be found.
+                  </NotFoundPara>
+                </TrendingMainContainer>
               </HomeMainContainer>
             </>
           )
@@ -202,4 +141,4 @@ class SavedVideos extends Component {
   }
 }
 
-export default SavedVideos
+export default NotFound
